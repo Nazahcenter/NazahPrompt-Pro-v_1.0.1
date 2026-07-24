@@ -1,0 +1,141 @@
+            ) : activeDialog === 'profile' ? (
+              /* REAL STATEFUL USER PROFILE & RECHARTS 7-DAY USAGE CHART */
+              <div className="py-2 space-y-6">
+                {/* Profile Form Details */}
+                <form onSubmit={handleSaveProfile} className="space-y-4">
+                  <div className="flex items-center gap-4 p-4 rounded-xl bg-secondary/25 border border-border/40">
+                    <Avatar className="h-14 w-14 border border-primary/25">
+                      <AvatarImage src="" />
+                      <AvatarFallback className="bg-primary text-primary-foreground text-base font-extrabold">{getInitials(profileName)}</AvatarFallback>
+                    </Avatar>
+                    <div className="space-y-1">
+                      <p className="text-sm font-bold text-foreground flex items-center gap-1.5 leading-none">
+                        {profileName}
+                        {subscription.plan !== 'free' ? (
+                          <Badge className="bg-amber-100 hover:bg-amber-100/90 border-amber-200 text-amber-800 dark:bg-amber-900/30 dark:border-amber-700 dark:text-amber-200 text-[9px] font-black h-4 px-1.5 rounded-md">
+                            👑 PRO
+                          </Badge>
+                        ) : (
+                          <Badge className="bg-secondary border border-border text-muted-foreground dark:text-zinc-400 text-[9px] font-black h-4 px-1.5 rounded-md">
+                            GRATUIT
+                          </Badge>
+                        )}
+                      </p>
+                      <p className="text-xs text-muted-foreground dark:text-zinc-400 font-semibold">{profileEmail}</p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <Label className="text-[11px] font-extrabold text-muted-foreground dark:text-zinc-400 uppercase tracking-wider">Nom d'utilisateur</Label>
+                      <Input 
+                        value={editName}
+                        onChange={(e) => setEditName(e.target.value)}
+                        placeholder="Votre nom"
+                        className="bg-white dark:bg-zinc-900/50 border-border/80 rounded-xl focus-visible:ring-primary h-10 text-xs font-semibold"
+                      />
+                    </div>
+                    
+                    <div className="space-y-1.5">
+                      <Label className="text-[11px] font-extrabold text-muted-foreground dark:text-zinc-400 uppercase tracking-wider">Adresse E-mail</Label>
+                      <Input 
+                        value={editEmail}
+                        onChange={(e) => setEditEmail(e.target.value)}
+                        placeholder="votre@email.com"
+                        type="email"
+                        className="bg-white dark:bg-zinc-900/50 border-border/80 rounded-xl focus-visible:ring-primary h-10 text-xs font-semibold"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end gap-2 pt-1 border-b border-border/30 pb-4">
+                    <Button 
+                      type="submit" 
+                      className="bg-primary hover:bg-primary/95 text-primary-foreground text-xs font-bold h-9 px-4 rounded-xl shadow-sm transition-all hover:scale-[1.01]"
+                    >
+                      Enregistrer le profil
+                    </Button>
+                  </div>
+                </form>
+
+                {/* Recharts Data Visualization: Usage Overview last 7 days */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-foreground">Utilisation sur les 7 derniers jours</h4>
+                      <p className="text-[10px] text-muted-foreground dark:text-zinc-400 font-semibold">Suivi d'activité des invites générées</p>
+                    </div>
+                    <Badge variant="outline" className="text-[10px] font-bold bg-primary/5 text-primary border-primary/20 rounded-md">
+                      Total historique : {
+                        subscription.plan === 'free' 
+                          ? totalUsage 
+                          : Object.values(dailyStats).reduce((a, b) => a + b, 0)
+                      } prompts
+                    </Badge>
+                  </div>
+
+                  <div className="h-[180px] w-full bg-secondary/20 rounded-xl border border-border/40 p-3 pt-4 font-sans select-none">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart
+                        data={getChartData()}
+                        margin={{ top: 5, right: 10, left: -25, bottom: 0 }}
+                      >
+                        <defs>
+                          <linearGradient id="colorGenerations" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#4F6F52" stopOpacity={0.3}/>
+                            <stop offset="95%" stopColor="#4F6F52" stopOpacity={0.0}/>
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" opacity={0.6} />
+                        <XAxis 
+                          dataKey="displayDate" 
+                          stroke="#718096" 
+                          fontSize={9}
+                          fontWeight={600}
+                          tickLine={false} 
+                          axisLine={false}
+                          dy={6}
+                        />
+                        <YAxis 
+                          stroke="#718096"
+                          fontSize={9}
+                          fontWeight={600}
+                          tickLine={false}
+                          axisLine={false}
+                          allowDecimals={false}
+                        />
+                        <RechartsTooltip 
+                          content={({ active, payload }) => {
+                            if (active && payload && payload.length) {
+                              const data = payload[0].payload;
+                              return (
+                                <div className="bg-card border border-border/80 px-2.5 py-1.5 rounded-lg shadow-md text-[10px] font-sans">
+                                  <p className="font-extrabold text-foreground">{data.displayDate}</p>
+                                  <p className="font-semibold text-primary">
+                                    {payload[0].value} {payload[0].value === 1 ? 'génération' : 'générations'}
+                                  </p>
+                                </div>
+                              );
+                            }
+                            return null;
+                          }}
+                        />
+                        <Area 
+                          type="monotone" 
+                          dataKey="Generations" 
+                          stroke="#4F6F52" 
+                          strokeWidth={2}
+                          fillOpacity={1} 
+                          fill="url(#colorGenerations)" 
+                        />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+
+                <div className="flex justify-end pt-2">
+                  <Button variant="outline" size="sm" onClick={() => setActiveDialog(null)} className="rounded-xl border-border hover:bg-secondary/40 font-bold text-xs h-9 px-4">
+                    Fermer
+                  </Button>
+                </div>
+              </div>

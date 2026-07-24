@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#e5e0e0" />
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Paramètres spécifiques pour iOS (Apple) -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="NazahPrompt" />
+    <link rel="icon" type="image/png" href="/logo.png" />
+    <link rel="apple-touch-icon" href="/logo.png" />
+
+    <title>NazahPrompt Pro™ - Votre plateforme de gestion de prompts avancée</title>
+    <meta name="description" content="NazahPrompt Pro est votre outil de gestion, création et affinement de prompts avancés pour optimiser vos interactions avec les modèles d'IA." />
+    <link rel="canonical" href="https://nazahprompt.pro/" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://nazahprompt.pro/" />
+    <meta property="og:title" content="NazahPrompt Pro - Plateforme de gestion de prompts" />
+    <meta property="og:description" content="Gérez et affinez vos prompts IA avec NazahPrompt Pro." />
+    <meta property="og:image" content="/logo.png" />
+
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    <script>
+      // Suppression du Service Worker pour forcer une version fraîche et corriger les erreurs de cache API
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+          for(let registration of registrations) {
+            registration.unregister().then(function() {
+              console.log('Service Worker débloqué pour mise à jour.');
+            });
+          }
+        });
+      }
+    </script>
+  </body>
+</html>
+

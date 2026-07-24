@@ -1,0 +1,356 @@
+            ) : activeDialog === 'settings' ? (
+              /* REAL STATEFUL SETTINGS DIALOGUE (OPTION B) */
+              <div className="py-2 space-y-6">
+                
+                {/* 1. Écran & Apparence */}
+                <div className="space-y-3">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-1.5">🖥️ Écran & Apparence</h4>
+                  <p className="text-[10px] text-muted-foreground dark:text-zinc-400 font-semibold leading-relaxed">Réglez la luminosité de l’écran pour votre confort de lecture.</p>
+                  
+                  <div className="grid grid-cols-3 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => handleThemeChange('light')}
+                      className={cn(
+                        "flex flex-col items-center justify-center p-3 rounded-xl border border-border/70 transition-all cursor-pointer gap-1.5 duration-300",
+                        theme === 'light' 
+                          ? "bg-primary/10 border-primary text-primary shadow-sm" 
+                          : "bg-white dark:bg-zinc-900/50 dark:bg-zinc-900/50 hover:bg-secondary/40 text-muted-foreground dark:text-zinc-400 hover:text-foreground border-border/40"
+                      )}
+                    >
+                      <Sun className="w-4 h-4 text-amber-500" />
+                      <span className="text-[11px] font-bold">Clair</span>
+                    </button>
+                    
+                    <button
+                      type="button"
+                      onClick={() => handleThemeChange('dark')}
+                      className={cn(
+                        "flex flex-col items-center justify-center p-3 rounded-xl border border-border/70 transition-all cursor-pointer gap-1.5 duration-300",
+                        theme === 'dark' 
+                          ? "bg-primary/20 border-primary text-primary shadow-sm" 
+                          : "bg-white dark:bg-zinc-900/50 dark:bg-zinc-900/50 hover:bg-secondary/40 text-muted-foreground dark:text-zinc-400 hover:text-foreground border-border/40"
+                      )}
+                    >
+                      <Moon className="w-4 h-4 text-indigo-400" />
+                      <span className="text-[11px] font-bold">Sombre</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => handleThemeChange('system')}
+                      className={cn(
+                        "flex flex-col items-center justify-center p-3 rounded-xl border border-border/70 transition-all cursor-pointer gap-1.5 duration-300",
+                        theme === 'system' 
+                          ? "bg-primary/10 border-primary text-primary shadow-sm" 
+                          : "bg-white dark:bg-zinc-900/50 dark:bg-zinc-900/50 hover:bg-secondary/40 text-muted-foreground dark:text-zinc-400 hover:text-foreground border-border/40"
+                      )}
+                    >
+                      <Laptop className="w-4 h-4 text-emerald-500" />
+                      <span className="text-[10px] font-bold text-center leading-tight">Configuration Système</span>
+                    </button>
+                  </div>
+                </div>
+
+                <Separator className="bg-border/40" />
+
+                {/* 2. Configuration de l'IA */}
+                <div className="space-y-4">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-1.5">🤖 Configuration de l'IA</h4>
+                  <p className="text-[10px] text-muted-foreground dark:text-zinc-400 font-semibold leading-relaxed">Contrôlez le modèle et la créativité pour façonner vos prompts.</p>
+                  
+                  <div className="space-y-1.5">
+                    <Label className="text-[11px] font-extrabold text-muted-foreground dark:text-zinc-400 uppercase tracking-wider">Modèle par défaut</Label>
+                    <Select 
+                      value={aiModel} 
+                      onValueChange={handleAiModelChange}
+                    >
+                      <SelectTrigger className="bg-white dark:bg-zinc-900/50 hover:bg-secondary/20 transition-colors border-border/80 rounded-xl h-10 text-xs font-semibold">
+                        <SelectValue placeholder="Choisir un modèle" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="gemini-3-flash-preview">⚡ Gemini 2.5 Flash (Recommandé)</SelectItem>
+                        <SelectItem value="gemini-3-pro-preview">👑 Gemini 2.5 Pro (Raisonnement Élevé)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <Label className="text-[11px] font-extrabold text-muted-foreground dark:text-zinc-400 uppercase tracking-wider">Créativité (Température)</Label>
+                      <span className="font-mono text-xs font-bold text-primary">{aiTemperature.toFixed(1)}</span>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <span className="text-[10px] font-bold text-muted-foreground dark:text-zinc-400">Précis</span>
+                      <input 
+                        type="range" 
+                        min="0.1" 
+                        max="1.0" 
+                        step="0.1"
+                        value={aiTemperature || 0.7}
+                        onChange={(e) => handleAiTemperatureChange(parseFloat(e.target.value))}
+                        className="w-full h-1.5 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
+                      />
+                      <span className="text-[10px] font-bold text-muted-foreground dark:text-zinc-400">Créatif</span>
+                    </div>
+                  </div>
+                </div>
+
+                <Separator className="bg-border/40" />
+
+                {/* 3. Ergonomie & Préférences */}
+                <div className="space-y-4">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-1.5">⚙️ Préférences d'Application</h4>
+                  <p className="text-[10px] text-muted-foreground dark:text-zinc-400 font-semibold leading-relaxed">Optimisez vos flux de travail et l'affichage des prompts.</p>
+                  
+                  {/* Toggle Auto Copy */}
+                  <div className="flex items-center justify-between p-3 rounded-xl bg-secondary/15 border border-border/20">
+                    <div className="space-y-0.5">
+                      <p className="text-xs font-bold text-foreground">Copie automatique</p>
+                      <p className="text-[10px] text-muted-foreground dark:text-zinc-400 font-semibold">Copier automatiquement le prompt après sa génération.</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleAutoCopyChange(!autoCopy)}
+                      className={cn(
+                        "relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none",
+                        autoCopy ? "bg-primary" : "bg-neutral-200"
+                      )}
+                    >
+                      <span
+                        className={cn(
+                          "pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white dark:bg-zinc-100 shadow ring-0 transition duration-200 ease-in-out",
+                          autoCopy ? "translate-x-4" : "translate-x-0"
+                        )}
+                      />
+                    </button>
+                  </div>
+
+                  {/* Toggle Play Chime Sound */}
+                  <div className="flex items-center justify-between p-3 rounded-xl bg-secondary/15 border border-border/20">
+                    <div className="space-y-0.5">
+                      <p className="text-xs font-bold text-foreground">Sons de validation</p>
+                      <p className="text-[10px] text-muted-foreground dark:text-zinc-400 font-semibold">Jouer un joli carillon zen lors d'une génération finie.</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const nextVal = !soundEnabled;
+                        handleSoundEnabledChange(nextVal);
+                        if (nextVal) playZenChime();
+                      }}
+                      className={cn(
+                        "relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none",
+                        soundEnabled ? "bg-primary" : "bg-neutral-200"
+                      )}
+                    >
+                      <span
+                        className={cn(
+                          "pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white dark:bg-zinc-100 shadow ring-0 transition duration-200 ease-in-out",
+                          soundEnabled ? "translate-x-4" : "translate-x-0"
+                        )}
+                      />
+                    </button>
+                  </div>
+
+                  {/* Font Size Selector */}
+                  <div className="space-y-1.5">
+                    <Label className="text-[11px] font-extrabold text-muted-foreground dark:text-zinc-400 uppercase tracking-wider">Taille de police globale du résultat</Label>
+                    <Select 
+                      value={resultFontSize} 
+                      onValueChange={handleFontSizeChange}
+                    >
+                      <SelectTrigger className="bg-white dark:bg-zinc-900/50 hover:bg-secondary/20 transition-colors border-border/80 rounded-xl h-10 text-xs font-semibold">
+                        <SelectValue placeholder="Sélectionner la taille" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="text-xs">Petit (compact - 12px)</SelectItem>
+                        <SelectItem value="text-sm">Standard (confort - 14px)</SelectItem>
+                        <SelectItem value="text-base">Grand (lisible - 16px)</SelectItem>
+                        <SelectItem value="text-lg">Très Grand (doux pour les yeux - 18px)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <Separator className="bg-border/40" />
+
+                {/* 4. Zone de Danger & Réinitialisation d'usine */}
+                <div className="space-y-3">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400 flex items-center gap-1.5">⚠️ Zone de Danger</h4>
+                  <p className="text-[10px] text-muted-foreground dark:text-zinc-400 font-semibold leading-relaxed">
+                    Supprimez définitivement votre historique local, vos préférences et statistiques.
+                  </p>
+
+                  {!confirmReset ? (
+                    <Button 
+                      type="button"
+                      variant="destructive"
+                      onClick={() => setConfirmReset(true)}
+                      className="w-full bg-red-500/10 hover:bg-red-500 hover:text-white border border-red-500/20 text-red-600 dark:text-red-400 font-extrabold text-xs h-9 rounded-xl transition-all"
+                    >
+                      Réinitialiser l'application d'usine
+                    </Button>
+                  ) : (
+                    <div className="p-3 bg-red-500/5 border border-red-500/20 rounded-xl space-y-3 animate-fadeIn duration-300">
+                      <p className="text-[10px] font-bold text-red-700 leading-tight">
+                        Cette action est irréversible et effacera toutes les données personnalisées. Êtes-vous sûr ?
+                      </p>
+                      <div className="flex gap-2">
+                        <Button 
+                          type="button"
+                          variant="destructive"
+                          onClick={handleResetAll}
+                          className="flex-1 bg-red-600 hover:bg-red-700 text-white font-extrabold text-xs h-9 rounded-xl"
+                        >
+                          Confirmer la réinitialisation
+                        </Button>
+                        <Button 
+                          type="button"
+                          variant="outline"
+                          onClick={() => setConfirmReset(false)}
+                          className="flex-1 border-border bg-white dark:bg-zinc-900/50 text-foreground hover:bg-secondary font-semibold text-xs h-9 rounded-xl"
+                        >
+                          Annuler
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex justify-end pt-3 border-t border-border/30">
+                  <Button variant="outline" size="sm" onClick={() => setActiveDialog(null)} className="rounded-xl border-border hover:bg-secondary/40 font-bold text-xs h-10 px-6">
+                    Fermer les paramètres
+                  </Button>
+                </div>
+              </div>
+            ) : activeDialog === 'notifications' ? (
+              <div className="py-2 space-y-4">
+                {/* Notification Header actions */}
+                <div className="flex items-center justify-between pb-3 border-b border-border/40">
+                  <span className="text-xs font-bold text-muted-foreground dark:text-zinc-400 uppercase tracking-wider">
+                    {notifications.length} {notifications.length > 1 ? 'Notifications' : 'Notification'}
+                  </span>
+                  
+                  {notifications.length > 0 && (
+                    <div className="flex gap-2">
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={() => {
+                          setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+                          toast.success("Toutes les notifications ont été marquées comme lues. ✔️");
+                        }}
+                        className="h-7 text-[10px] font-bold text-primary hover:bg-primary/10 rounded-lg px-2 shadow-none border-0"
+                      >
+                        Tout marquer comme lu
+                      </Button>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={() => {
+                          setNotifications([]);
+                          toast.info("Toutes les notifications ont été effacées.");
+                        }}
+                        className="h-7 text-[10px] font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 hover:text-rose-700 dark:hover:text-rose-300 rounded-lg px-2 shadow-none border-0"
+                      >
+                        Effacer tout
+                      </Button>
+                    </div>
+                  )}
+                </div>
+
+                <ScrollArea className="h-[280px] pr-1">
+                  {notifications.length === 0 ? (
+                    <div className="py-12 flex flex-col items-center justify-center text-center space-y-3">
+                      <div className="p-3 bg-secondary/40 rounded-full text-muted-foreground dark:text-zinc-400/60 border border-border/30">
+                        <Bell className="w-6 h-6 stroke-1" />
+                      </div>
+                      <div className="space-y-0.5">
+                        <p className="text-xs font-bold text-foreground">Aucune notification</p>
+                        <p className="text-[10px] text-muted-foreground dark:text-zinc-400 font-semibold">Vous êtes parfaitement à jour !</p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-2.5">
+                      {notifications.map((noti) => (
+                        <div 
+                          key={noti.id}
+                          className={cn(
+                            "group relative p-3 rounded-xl border transition-all duration-200 flex items-start gap-3",
+                            noti.read 
+                              ? "bg-card border-border/50 text-muted-foreground dark:text-zinc-400/80" 
+                              : "bg-emerald-50/10 border-primary/20 text-foreground shadow-[0_2px_10px_rgba(110,142,117,0.02)]"
+                          )}
+                        >
+                          {/* Alert level indicator icon */}
+                          <div className={cn(
+                            "p-2 rounded-lg shrink-0",
+                            noti.type === 'success' && "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+                            noti.type === 'info' && "bg-blue-500/10 text-blue-600 dark:text-blue-400",
+                            noti.type === 'alert' && "bg-amber-500/10 text-amber-600 dark:text-amber-400",
+                            noti.type === 'premium' && "bg-amber-500/15 text-amber-600 dark:text-amber-400"
+                          )}>
+                            {noti.type === 'success' && <Check className="w-3.5 h-3.5 stroke-[2.5]" />}
+                            {noti.type === 'info' && <Info className="w-3.5 h-3.5" />}
+                            {noti.type === 'alert' && <AlertCircle className="w-3.5 h-3.5" />}
+                            {noti.type === 'premium' && <Crown className="w-3.5 h-3.5 fill-amber-500/10" />}
+                          </div>
+
+                          <div className="space-y-1 pr-12 flex-grow">
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                              <span className={cn("text-xs font-bold", !noti.read && "text-foreground font-extrabold")}>
+                                {noti.title}
+                              </span>
+                              {!noti.read && (
+                                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+                              )}
+                            </div>
+                            <p className="text-[10px] text-muted-foreground dark:text-zinc-400 leading-normal">
+                              {noti.description}
+                            </p>
+                            <span className="text-[9px] font-mono font-medium text-muted-foreground dark:text-zinc-400/60 block pt-0.5">
+                              {noti.date}
+                            </span>
+                          </div>
+
+                          {/* Action Buttons */}
+                          <div className="absolute right-2 top-2.5 flex items-center gap-1 opacity-70 group-hover:opacity-100 transition-opacity">
+                            {!noti.read && (
+                              <Button 
+                                variant="ghost" 
+                                size="icon"
+                                onClick={() => {
+                                  setNotifications(prev => prev.map(n => n.id === noti.id ? { ...n, read: true } : n));
+                                  toast.success("Notification marquée comme lue.");
+                                }}
+                                className="h-6 w-6 rounded-lg text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 border-0 shadow-none"
+                              >
+                                <Check className="w-3 h-3 stroke-[2.5]" />
+                              </Button>
+                            )}
+                            <Button 
+                              variant="ghost" 
+                              size="icon"
+                              onClick={() => {
+                                setNotifications(prev => prev.filter(n => n.id !== noti.id));
+                                toast.info("Notification supprimée.");
+                              }}
+                              className="h-6 w-6 rounded-lg text-red-500 dark:text-red-400 hover:bg-red-500/10 hover:text-red-600 dark:hover:text-red-300 border-0 shadow-none"
+                            >
+                              <X className="w-3 h-3" />
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </ScrollArea>
+
+                <div className="pt-3 border-t border-border/30 flex justify-end">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => setActiveDialog(null)} 
+                    className="rounded-xl border-border hover:bg-secondary/45 font-bold text-xs h-9 px-5"
+                  >

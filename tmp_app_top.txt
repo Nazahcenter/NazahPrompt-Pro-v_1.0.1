@@ -1,0 +1,250 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { 
+  Sparkles, 
+  Copy, 
+  RotateCcw, 
+  History, 
+  Settings2, 
+  Send, 
+  Check, 
+  Terminal,
+  UserCircle,
+  MessageSquare,
+  Layout,
+  Target,
+  ShieldAlert,
+  Wand2,
+  Trash2,
+  Crown,
+  Lock,
+  Calendar,
+  ArrowRight,
+  FileText,
+  Search,
+  Sun,
+  Moon,
+  Laptop,
+  Download
+} from 'lucide-react';
+import { jsPDF } from 'jspdf';
+import { cn, stripEmojisAndMarkdown } from '@/lib/utils';
+import { Button, buttonVariants } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
+import { Label } from '@/components/ui/label';
+import { Separator } from '@/components/ui/separator';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuGroup,
+  DropdownMenuItem, 
+  DropdownMenuLabel, 
+  DropdownMenuSeparator, 
+  DropdownMenuTrigger 
+} from '@/components/ui/dropdown-menu';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Toaster } from '@/components/ui/sonner';
+import { toast } from 'sonner';
+import { Progress } from '@/components/ui/progress';
+import { 
+  Settings, 
+  User, 
+  LogOut, 
+  CreditCard,
+  Bell,
+  ExternalLink,
+  Info,
+  AlertCircle,
+  X
+} from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import {
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  Tooltip as RechartsTooltip,
+  CartesianGrid
+} from 'recharts';
+
+import { generateSophisticatedPrompt, refinePrompt } from './lib/gemini';
+import { PromptConfig, GeneratedPrompt, PromptRole, PromptTone, PromptFormat } from './types';
+import { HistorySection } from './components/features/HistorySection';
+
+const INITIAL_CONFIG: PromptConfig = {
+  role: 'expert',
+  tone: 'professional',
+  format: 'markdown',
+  audience: 'Tout public',
+  constraints: 'Pas de jargon technique inutile',
+};
+
+export default function App() {
+  const [baseIdea, setBaseIdea] = useState('');
+  const [config, setConfig] = useState<PromptConfig>(INITIAL_CONFIG);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [result, setResult] = useState('');
+  const [showRaw, setShowRaw] = useState(false);
+  const [history, setHistory] = useState<GeneratedPrompt[]>(() => {
+    if (typeof window !== 'undefined') {
+      const resetDone = localStorage.getItem('prompt_v2_lifetime_reset_done');
+      if (resetDone) {
+        const saved = localStorage.getItem('prompt_history');
+        if (saved) {
+          try {
+            return JSON.parse(saved);
+          } catch (e) {
+            console.error("Failed to parse history", e);
+            return [];
+          }
+        }
+      }
+    }
+    return [];
+  });
+  const [refineFeedback, setRefineFeedback] = useState('');
+  const [activeDialog, setActiveDialog] = useState<string | null>(null);
+  
+  // Custom authentications states
+  const [currentUser, setCurrentUser] = useState<{ username: string; email: string; isAdmin: boolean } | null>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('prompt_current_user');
+      if (saved) {
+        try {
+          return JSON.parse(saved);
+        } catch (e) {
+          console.error("Failed to parse current user", e);
+        }
+      }
+    }
+    return null;
+  });
+
+  const [showLanding, setShowLanding] = useState(() => currentUser === null);
+  const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
+  const [authUsername, setAuthUsername] = useState('');
+  const [authEmail, setAuthEmail] = useState('');
+  const [authPassword, setAuthPassword] = useState('');
+  const [userIp, setUserIp] = useState('192.168.1.1');
+  const [adminSearchQuery, setAdminSearchQuery] = useState('');
+  const [adminTab, setAdminTab] = useState<'stats' | 'connections'>('stats');
+
+  // States for subscription and checkout
+  const [subscription, setSubscription] = useState<{ plan: string; expiry: string | null; expiryIso?: string | null }>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('prompt_subscription');
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          
+          // Vérifier si l'abonnement a expiré
+          if (parsed.expiryIso) {
+            const expiryDate = new Date(parsed.expiryIso);
+            if (expiryDate.getTime() < Date.now()) {
+              return { plan: 'free', expiry: null };
+            }
+          }
+          
+          return parsed;
+        } catch (e) {
+          console.error("Failed to parse subscription", e);
+        }
+      }
+    }
+    return { plan: 'free', expiry: null };
+  });
+
+  const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
+  const [checkoutPlan, setCheckoutPlan] = useState<string | null>(null); // null, 'pro_monthly', 'pro_yearly'
+  const [paymentPhone, setPaymentPhone] = useState('');
+  const [paymentOperator, setPaymentOperator] = useState('');
+  const [paymentCountry, setPaymentCountry] = useState('BJ');
+  const [paymentOtp, setPaymentOtp] = useState('');
+  const [operators, setOperators] = useState<any[]>([]);
+  const [isLoadingOperators, setIsLoadingOperators] = useState(false);
+  const [otpRequired, setOtpRequired] = useState(false);
+
+  useEffect(() => {
+    const fetchOperators = async () => {
+      setIsLoadingOperators(true);
+      try {
+        const res = await fetch(`/api/sebpay/operators?country=${paymentCountry}`);
+        const data = await res.json();
+        if (data.success && data.data) {
+          setOperators(data.data);
+          if (data.data.length > 0) {
+             const defaultOp = data.data[0];
+             setPaymentOperator(defaultOp.slug);
+             setOtpRequired(defaultOp.otp_required);
+          } else {
+             setPaymentOperator('');
+             setOtpRequired(false);
+          }
+        } else {
+          setOperators([]);
+          setPaymentOperator('');
+          setOtpRequired(false);
+        }
+      } catch (err) {
+        console.error("Erreur de récupération des opérateurs:", err);
+        setOperators([]);
+      } finally {
+        setIsLoadingOperators(false);
+      }
+    };
+    if (paymentCountry) {
+      fetchOperators();
+    }
+  }, [paymentCountry]);
+
+  useEffect(() => {
+     if (operators.length > 0 && paymentOperator) {
+        const op = operators.find(o => o.slug === paymentOperator);
+        setOtpRequired(op ? op.otp_required : false);
+     }
+  }, [paymentOperator, operators]);
+
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const [paymentProgress, setPaymentProgress] = useState(0);
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+  const [totalUsage, setTotalUsage] = useState<number>(() => {
+    if (typeof window !== 'undefined') {
+      const resetDone = localStorage.getItem('prompt_v2_lifetime_reset_done');
+      if (resetDone) {
+        const saved = localStorage.getItem('prompt_total_usage');
+        if (saved) {
+          return parseInt(saved, 10) || 0;
+        }
+      }
+    }
+    return 0;
+  });
+
+  const [profileName, setProfileName] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('profile_name') || 'Nazah User';
+    }
+    return 'Nazah User';
+  });

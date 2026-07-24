@@ -1,0 +1,119 @@
+{/* Dynamic Modals */}
+        <Dialog open={activeDialog !== null} onOpenChange={(open) => {
+          if (!open) {
+            setActiveDialog(null);
+            setConfirmReset(false);
+          }
+        }}>
+          <DialogContent className={cn(
+            "font-sans border-border rounded-xl bg-card/95 backdrop-blur-md transition-all duration-300 max-h-[90vh] overflow-y-auto outline-none py-6 px-6",
+            activeDialog === 'billing' ? "sm:max-w-[620px]" : activeDialog === 'admin' ? "sm:max-w-[850px]" : "sm:max-w-[480px]"
+          )}>
+            <DialogHeader className="space-y-1.5">
+              <DialogTitle className="capitalize text-lg font-extrabold text-foreground tracking-tight flex items-center gap-2">
+                {activeDialog === 'profile' && "Gérer votre Profil"}
+                {activeDialog === 'billing' && (checkoutPlan !== null ? "🔐 Paiement Sécurisé SSL" : "Facturation & Abonnement")}
+                {activeDialog === 'settings' && "Paramètres du Compte"}
+                {activeDialog === 'notifications' && "Centre de Notifications"}
+                {activeDialog === 'admin' && "🛡️ Console d'Administration"}
+              </DialogTitle>
+              <DialogDescription className="text-muted-foreground dark:text-zinc-400 text-xs font-semibold">
+                {activeDialog === 'profile' && "Mettez à jour vos informations personnelles et votre avatar."}
+                {activeDialog === 'billing' && (checkoutPlan !== null ? "Saisissez vos coordonnées de carte bancaire pour activer votre abonnement instantanément." : "Gérez vos formules et accédez aux capacités prioritaires de l'IA.")}
+                {activeDialog === 'settings' && "Configurez vos préférences d'utilisation et de sécurité."}
+                {activeDialog === 'notifications' && "Choisissez comment vous souhaitez être informé des activités."}
+                {activeDialog === 'admin' && "Consultez l'adresse IP des connexions d'administrateurs, suivez l'activité par jour, semaine et mois, et analysez les statistiques d'utilisation."}
+              </DialogDescription>
+            </DialogHeader>
+            
+            {activeDialog === 'billing' ? (
+              <BillingDialog
+                subscription={subscription}
+                checkoutPlan={checkoutPlan}
+                setCheckoutPlan={setCheckoutPlan}
+                billingPeriod={billingPeriod}
+                setBillingPeriod={setBillingPeriod}
+                paymentPhone={paymentPhone}
+                setPaymentPhone={setPaymentPhone}
+                paymentOperator={paymentOperator}
+                setPaymentOperator={setPaymentOperator}
+                paymentCountry={paymentCountry}
+                setPaymentCountry={setPaymentCountry}
+                paymentOtp={paymentOtp}
+                setPaymentOtp={setPaymentOtp}
+                operators={operators}
+                isLoadingOperators={isLoadingOperators}
+                otpRequired={otpRequired}
+                isProcessingPayment={isProcessingPayment}
+                paymentProgress={paymentProgress}
+                showCancelConfirm={showCancelConfirm}
+                setShowCancelConfirm={setShowCancelConfirm}
+                handleCancelSubscription={handleCancelSubscription}
+                setActiveDialog={setActiveDialog}
+                currentUser={currentUser}
+                handleDownloadInvoice={handleDownloadInvoice}
+                handlePaymentSubmit={handlePaymentSubmit}
+              />
+            ) : activeDialog === 'profile' ? (
+              <ProfileDialog
+                currentUser={currentUser}
+                editName={editName}
+                setEditName={setEditName}
+                editEmail={editEmail}
+                setEditEmail={setEditEmail}
+                handleSaveProfile={handleSaveProfile}
+                setActiveDialog={setActiveDialog}
+              />
+            ) : activeDialog === 'admin' ? (
+              <AdminDialog
+                adminTab={adminTab}
+                setAdminTab={setAdminTab}
+                adminSearchQuery={adminSearchQuery}
+                setAdminSearchQuery={setAdminSearchQuery}
+                dailyStats={dailyStats}
+                userIp={userIp}
+                setActiveDialog={setActiveDialog}
+                getAdminStats={getAdminStats}
+              />
+            ) : activeDialog === 'settings' ? (
+              <SettingsDialog
+                theme={theme}
+                handleThemeChange={handleThemeChange}
+                resultFontSize={resultFontSize}
+                handleFontSizeChange={handleFontSizeChange}
+                autoCopy={autoCopy}
+                handleAutoCopyChange={handleAutoCopyChange}
+                soundEnabled={soundEnabled}
+                handleSoundEnabledChange={handleSoundEnabledChange}
+                aiModel={aiModel}
+                handleAiModelChange={handleAiModelChange}
+                aiTemperature={aiTemperature}
+                handleAiTemperatureChange={handleAiTemperatureChange}
+                confirmReset={confirmReset}
+                setConfirmReset={setConfirmReset}
+                handleResetAll={handleResetAll}
+                playZenChime={playZenChime}
+                setActiveDialog={setActiveDialog}
+              />
+            ) : activeDialog === 'notifications' ? (
+              <NotificationsDialog
+                notifications={notifications}
+                setNotifications={setNotifications}
+                setActiveDialog={setActiveDialog}
+              />
+            ) : (
+              <div className="py-6 min-h-[200px] flex flex-col items-center justify-center text-center space-y-4">
+                <div className="p-4 bg-secondary/60 rounded-full text-primary border border-border/40">
+                  {activeDialog === 'notifications' && <Bell className="w-8 h-8" />}
+                </div>
+                <div className="space-y-1">
+                  <p className="text-sm font-bold text-foreground">Module en cours de développement</p>
+                  <p className="text-xs text-muted-foreground dark:text-zinc-400 font-medium">Cette fonctionnalité sera disponible dans la version 1.1.0</p>
+                </div>
+                <Button variant="outline" size="sm" onClick={() => setActiveDialog(null)} className="rounded-xl border-border hover:bg-secondary/40 font-semibold text-xs">
+                  Fermer
+                </Button>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>

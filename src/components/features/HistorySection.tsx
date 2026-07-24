@@ -1,0 +1,125 @@
+import { motion, AnimatePresence } from 'motion/react';
+import { History, Copy, Trash2, Lock } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { Button, buttonVariants } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuTrigger 
+} from '@/components/ui/dropdown-menu';
+import { GeneratedPrompt } from '@/types';
+
+export function HistorySection({ 
+  history, 
+  onLoad, 
+  onClear,
+  onCopy,
+  onCopyClean,
+  isFree = false
+}: { 
+  history: GeneratedPrompt[], 
+  onLoad: (e: GeneratedPrompt) => void,
+  onClear: () => void,
+  onCopy: (text: string) => void,
+  onCopyClean: (text: string) => void,
+  isFree?: boolean
+}) {
+  return (
+    <Card className="border-border shadow-[0_4px_20px_rgba(110,142,117,0.03)] hover:shadow-[0_8px_30px_rgba(110,142,117,0.06)] overflow-hidden bg-card/95 backdrop-blur-sm transition-all duration-300 rounded-2xl">
+      <CardHeader className="bg-secondary/45 border-b border-border/60 flex flex-row items-center justify-between py-3.5 px-5">
+        <div className="flex items-center gap-2">
+          <History className="w-4 h-4 text-primary" />
+          <CardTitle className="text-xs font-bold uppercase tracking-wider text-primary/80">Historique</CardTitle>
+        </div>
+        {history.length > 0 && (
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="h-7 text-[10px] text-muted-foreground dark:text-zinc-400 font-bold hover:text-red-500 rounded-lg hover:bg-red-500/10 flex items-center justify-center gap-1" 
+            onClick={onClear}
+          >
+            {isFree ? (
+              <>
+                <Lock className="w-3 h-3 text-amber-500" />
+                <span>Effacer</span>
+              </>
+            ) : (
+              <>
+                <Trash2 className="w-3 h-3 text-destructive" />
+                <span>Effacer</span>
+              </>
+            )}
+          </Button>
+        )}
+      </CardHeader>
+      <CardContent className="p-0">
+        <ScrollArea className="h-[300px]">
+          {history.length > 0 ? (
+            <div className="divide-y divide-border/40 overflow-hidden">
+              <AnimatePresence initial={false}>
+                {history.map((entry) => (
+                  <motion.div
+                    key={entry.id}
+                    layout="position"
+                    initial={{ opacity: 0, height: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, height: "auto", scale: 1 }}
+                    exit={{ opacity: 0, height: 0, scale: 0.95 }}
+                    transition={{ type: "spring", stiffness: 350, damping: 30 }}
+                    className="w-full p-4 hover:bg-secondary/25 transition-colors group border-b border-border/40 last:border-0 overflow-hidden"
+                  >
+                    <div className="flex justify-between items-center gap-2">
+                      <button
+                        onClick={() => onLoad(entry)}
+                        className="flex-grow text-left group-hover:text-primary transition-colors cursor-pointer"
+                      >
+                        <div className="flex justify-between items-start mb-1 gap-2">
+                          <span className="text-xs font-semibold text-foreground leading-tight line-clamp-1 pr-4">
+                            {entry.originalIdea}
+                          </span>
+                          <span className="text-[9px] text-muted-foreground dark:text-zinc-400 font-mono whitespace-nowrap">
+                            {new Date(entry.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                        </div>
+                        <div className="flex gap-1.5 flex-wrap mt-2">
+                          <Badge variant="outline" className="text-[9px] px-1.5 py-0 h-4 border-primary/20 bg-secondary/40 capitalize text-foreground/80 font-medium">{entry.config.role}</Badge>
+                          <Badge variant="outline" className="text-[9px] px-1.5 py-0 h-4 border-primary/20 bg-secondary/40 capitalize text-foreground/80 font-medium">{entry.config.tone}</Badge>
+                        </div>
+                      </button>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger
+                          className={cn(
+                            buttonVariants({ variant: "ghost", size: "icon" }),
+                            "h-8 w-8 text-primary hover:text-foreground hover:bg-secondary/50 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all rounded-lg flex-shrink-0"
+                          )}
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <Copy className="h-3.5 w-3.5" />
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem className="cursor-pointer" onClick={() => onCopy(entry.result)}>
+                            Standard
+                          </DropdownMenuItem>
+                          <DropdownMenuItem className="cursor-pointer" onClick={() => onCopyClean(entry.result)}>
+                            Paragraphe (épuré)
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </div>
+          ) : (
+            <div className="h-full flex flex-col items-center justify-center text-muted-foreground dark:text-zinc-400/60 py-16">
+              <p className="text-xs italic font-medium">Aucun historique disponible.</p>
+            </div>
+          )}
+        </ScrollArea>
+      </CardContent>
+    </Card>
+  );
+}

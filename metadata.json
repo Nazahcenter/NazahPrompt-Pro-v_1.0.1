@@ -1,0 +1,8 @@
+{
+  "name": "NazahPrompt Pro™ v1.0.1",
+  "description": "Générateur de prompts sophistiqués et professionnels utilisant l\u0027IA pour optimiser vos interactions avec les modèles de langage.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

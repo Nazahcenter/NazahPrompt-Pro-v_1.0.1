@@ -1,0 +1,79 @@
+103:  const [baseIdea, setBaseIdea] = useState('');
+104:  const [config, setConfig] = useState<PromptConfig>(INITIAL_CONFIG);
+105:  const [isGenerating, setIsGenerating] = useState(false);
+106:  const [progress, setProgress] = useState(0);
+107:  const [result, setResult] = useState('');
+108:  const [showRaw, setShowRaw] = useState(false);
+109:  const [history, setHistory] = useState<GeneratedPrompt[]>(() => {
+126:  const [refineFeedback, setRefineFeedback] = useState('');
+127:  const [activeDialog, setActiveDialog] = useState<string | null>(null);
+130:  const [currentUser, setCurrentUser] = useState<{ username: string; email: string; isAdmin: boolean } | null>(() => {
+144:  const [showLanding, setShowLanding] = useState(() => currentUser === null);
+145:  const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
+146:  const [authUsername, setAuthUsername] = useState('');
+147:  const [authEmail, setAuthEmail] = useState('');
+148:  const [authPassword, setAuthPassword] = useState('');
+149:  const [userIp, setUserIp] = useState('192.168.1.1');
+150:  const [adminSearchQuery, setAdminSearchQuery] = useState('');
+151:  const [adminTab, setAdminTab] = useState<'stats' | 'connections'>('stats');
+154:  const [subscription, setSubscription] = useState<{ plan: string; expiry: string | null; expiryIso?: string | null }>(() => {
+178:  const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
+179:  const [checkoutPlan, setCheckoutPlan] = useState<string | null>(null); // null, 'pro_monthly', 'pro_yearly'
+180:  const [paymentPhone, setPaymentPhone] = useState('');
+181:  const [paymentOperator, setPaymentOperator] = useState('');
+182:  const [paymentCountry, setPaymentCountry] = useState('BJ');
+183:  const [paymentOtp, setPaymentOtp] = useState('');
+184:  const [operators, setOperators] = useState<any[]>([]);
+185:  const [isLoadingOperators, setIsLoadingOperators] = useState(false);
+186:  const [otpRequired, setOtpRequired] = useState(false);
+228:  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+229:  const [paymentProgress, setPaymentProgress] = useState(0);
+230:  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+231:  const [totalUsage, setTotalUsage] = useState<number>(() => {
+244:  const [profileName, setProfileName] = useState(() => {
+250:  const [profileEmail, setProfileEmail] = useState(() => {
+256:  const [editName, setEditName] = useState(profileName);
+257:  const [editEmail, setEditEmail] = useState(profileEmail);
+259:  const isAdminUser = currentUser?.isAdmin === true || 
+265:  const isLimitExceeded = subscription.plan === 'free' && totalUsage >= 5 && !isAdminUser;
+267:  const [dailyStats, setDailyStats] = useState<Record<string, number>>(() => {
+282:  const [theme, setTheme] = useState<'light' | 'dark' | 'system'>(() => {
+289:  const [aiModel, setAiModel] = useState<string>(() => {
+296:  const [aiTemperature, setAiTemperature] = useState<number>(() => {
+304:  const [autoCopy, setAutoCopy] = useState<boolean>(() => {
+311:  const [resultFontSize, setResultFontSize] = useState<'text-xs' | 'text-sm' | 'text-base' | 'text-lg'>(() => {
+318:  const [soundEnabled, setSoundEnabled] = useState<boolean>(() => {
+325:  const [confirmReset, setConfirmReset] = useState<boolean>(false);
+327:  const [notifications, setNotifications] = useState<{
+379:  const addNotification = (title: string, description: string, type: 'info' | 'success' | 'alert' | 'premium') => {
+391:  const playZenChime = () => {
+516:  const recordLoginLog = (username: string, email: string, status: 'SUCCESS' | 'FAILED') => {
+540:  const recordGenerationLog = () => {
+556:  const handleSignUp = (e: React.FormEvent) => {
+603:  const handleLogIn = (e: React.FormEvent) => {
+643:  const handleLogOut = () => {
+650:  const getAdminStats = () => {
+749:  const getInitials = (name: string) => {
+758:  const handleThemeChange = (newTheme: 'light' | 'dark' | 'system') => {
+763:  const handleAiModelChange = (model: string) => {
+769:  const handleAiTemperatureChange = (temp: number) => {
+774:  const handleAutoCopyChange = (value: boolean) => {
+780:  const handleFontSizeChange = (size: 'text-xs' | 'text-sm' | 'text-base' | 'text-lg') => {
+786:  const handleSoundEnabledChange = (value: boolean) => {
+792:  const handleResetAll = () => {
+815:  const getChartData = () => {
+871:  const handleGenerate = async () => {
+951:  const handleRefine = async () => {
+997:  const copyToClipboard = (text: string) => {
+1002:  const copyCleanToClipboard = (text: string) => {
+1008:  const handleSaveProfile = (e: React.FormEvent) => {
+1026:  const clearHistory = () => {
+1037:  const loadFromHistory = (entry: GeneratedPrompt) => {
+1044:  const handlePaymentSubmit = async (e: React.FormEvent) => {
+1129:  const handleCancelSubscription = () => {
+1135:  const handleDownloadInvoice = () => {
+1143:  const exportAsTxt = (text: string) => {
+1161:  const exportAsMd = (text: string) => {
+1179:  const exportAsPdf = (text: string) => {
+1270:  return (
+3231:  return (

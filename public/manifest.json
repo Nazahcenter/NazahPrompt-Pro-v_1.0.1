@@ -1,0 +1,42 @@
+{
+  "id": "NazahPrompt",
+  "name": "NazahPromptPro™",
+  "short_name": "NazahPromptPro™",
+  "description": "NazahPromptPro™ transforme vos idées simples en instructions professionnelles et structurées via des modèles de langage de pointe pour des résultats d'une précision absolue.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#fdf902",
+  "theme_color": "#e5e0e0",
+  "lang": "fr",
+  "dir": "ltr",
+  "categories": [
+    "productivity",
+    "utilities"
+  ],
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "https://images.unsplash.com/photo-1661956602116-aa6865609028?ixlib=rb-4.0.3&auto=format&fit=crop&w=1280&h=720&q=80",
+      "sizes": "1280x720",
+      "type": "image/jpeg",
+      "form_factor": "wide",
+      "label": "Générateur de prompts"
+    },
+    {
+      "src": "https://images.unsplash.com/photo-1661956602116-aa6865609028?ixlib=rb-4.0.3&auto=format&fit=crop&w=720&h=1280&q=80",
+      "sizes": "720x1280",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Vue mobile"
+    }
+  ]
+}
